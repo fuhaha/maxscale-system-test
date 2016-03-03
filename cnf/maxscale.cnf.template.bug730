@@ -54,7 +54,7 @@ servers=server1,     server2,              server3,server4
 user=skysql
 passwd=skysql
 router_options=slave_selection_criteria=LEAST_ROUTER_CONNECTIONS
-filters=QLA|MySetOptionFilter
+|MySetOptionFilter
 
 [MySetOptionFilter]
 type=filter
@@ -70,7 +70,7 @@ router_options= slave
 servers=server1,server2,server3,server4
 user=skysql
 passwd=skysql
-filters=QLA|MySetOptionFilter
+|MySetOptionFilter
 
 [Read Connection Router Master]
 type=service
@@ -79,7 +79,7 @@ router_options=master
 servers=server1,server2,server3,server4
 user=skysql
 passwd=skysql
-filters=QLA|MySetOptionFilter
+|MySetOptionFilter
 
 [Debug Interface]
 type=service

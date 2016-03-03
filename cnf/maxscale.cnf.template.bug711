@@ -55,7 +55,7 @@ user=skysql
 passwd=skysql
 router_options=slave_selection_criteria=LEAST_ROUTER_CONNECTIONS
 use_sql_variables_in=all
-filters=QLA
+
 
 [Read Connection Router Slave]
 type=service
@@ -65,7 +65,7 @@ servers=server1,server2,server3,server4
 user=skysql
 passwd=skysql
 use_sql_variables_in=all
-filters=QLA
+
 
 [Read Connection Router Master]
 type=service
@@ -75,7 +75,7 @@ servers=server1,server2,server3,server4
 user=skysql
 passwd=skysql
 use_sql_variables_in=all
-filters=QLA
+
 
 [Debug Interface]
 type=service

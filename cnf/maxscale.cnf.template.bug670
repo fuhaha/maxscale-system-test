@@ -176,7 +176,7 @@ router_options= slave
 servers=server1,server2,server3,server4
 user=skysql
 passwd=skysql
-filters=QLA
+
 
 [Read Connection Listener Slave]
 type=listener

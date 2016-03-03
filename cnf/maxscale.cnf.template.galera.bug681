@@ -98,7 +98,7 @@ router_options= slave
 servers=server1,server2,server3
 user=skysql
 passwd=skysql
-#filters=QLA
+
 
 [Debug Interface]
 type=service
