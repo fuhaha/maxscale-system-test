@@ -10,7 +10,7 @@ Executes SQL query 'sql' using 'conn' connection and print results
 int execute_select_query_and_check(MYSQL *conn, char *sql, unsigned long long int rows);
 int create_t1(MYSQL * conn);
 int create_t2(MYSQL * conn);
-int create_insert_string(char *sql, int N, int fl);
+int create_insert_string(char* sql, int N, int fl);
 int insert_into_t1(MYSQL *conn, int N);
 int select_from_t1(MYSQL *conn, int N);
 int check_if_t1_exists(MYSQL *conn);
