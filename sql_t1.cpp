@@ -121,7 +121,7 @@ char* allocate_insert_string(int fl, int N)
     if(sql[fl] == NULL)
     {
         char tmpstr[256];
-        sprintf(tmpstr, "%d", N);
+        sprintf(tmpstr, "(%d, %d),", N, fl);
         sql[fl] = (char*)malloc(sizeof(ins1) + N * strlen(tmpstr) + 60);
         create_insert_string(sql[fl], N, fl);
     }
