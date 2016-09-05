@@ -171,13 +171,26 @@ MYSQL * open_conn_no_db(int port, const char* ip, const char*User, const char*Pa
 /**
  * Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clea up returns
  *
- * @param MYSQL	connection struct
- * @param sql	SQL string
+ * @param conn      MYSQL connection
+ * @param format    SQL string with printf style formatting
+ * @param ...       Parameters for @c format
  * @return 0 in case of success
  */
-int execute_query(MYSQL *conn, const char *sql)
+int execute_query(MYSQL *conn, const char *format, ...)
 {
-        return(execute_query1(conn, sql, false));
+    va_list valist;
+
+    va_start(valist, format);
+    int message_len = vsnprintf(NULL, 0, format, valist);
+    va_end(valist);
+
+    char sql[message_len + 1];
+
+    va_start(valist, format);
+    vsnprintf(sql, sizeof(sql), format, valist);
+    va_end(valist);
+
+    return(execute_query1(conn, sql, false));
 }
 
 /**

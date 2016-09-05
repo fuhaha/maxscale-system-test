@@ -32,7 +32,7 @@ MYSQL * open_conn_db(int port, const char* ip, const char* db, const char* User,
 MYSQL * open_conn(int port, const char* ip, const char* User, const char* Password, bool ssl);
 MYSQL * open_conn_no_db(int port, const char* ip, const char* User, const char* Password, bool ssl);
 int set_ssl(MYSQL * conn);
-int execute_query(MYSQL *conn, const char *sql);
+int execute_query(MYSQL *conn, const char *format, ...);
 int execute_query_silent(MYSQL *conn, const char *sql);
 int execute_query1(MYSQL *conn, const char *sql, bool silent);
 int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * affected_rows);
