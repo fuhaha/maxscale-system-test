@@ -375,10 +375,14 @@ public:
 
     /**
      * @brief Execute query on all nodes
-     * @param sql query to execute
+     *
+     * Supports printf style variable arguments.
+     *
+     * @param sql Query to execute
+     * @param ... Variable arguments
      * @return 0 in case of success
      */
-    int execute_query_all_nodes(const char* sql);
+    int execute_query_all_nodes(const char* sql, ...);
 
     /**
      * @brief execute 'SELECT @@version' against all nodes and store result in 'vesion' fied

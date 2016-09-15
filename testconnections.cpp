@@ -1289,9 +1289,14 @@ int TestConnections::check_t1_table(bool presence, char * db)
     return(global_result-gr);
 }
 
-int TestConnections::try_query(MYSQL *conn, const char *sql)
+int TestConnections::try_query(MYSQL *conn, const char *sql, ...)
 {
-    int res = execute_query(conn, sql);
+    va_list list;
+
+    va_start(list, sql);
+    int res = execute_query_va(conn, sql, list);
+    va_end(list);
+
     int len = strlen(sql);
     add_result(res, "Query '%.*s%s' failed!\n", len < 100 ? len : 100, sql, len < 100 ? "" : "...");
     return(res);

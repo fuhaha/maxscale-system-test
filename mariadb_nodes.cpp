@@ -650,13 +650,19 @@ int Mariadb_nodes::flush_hosts()
     }
 }
 
-int Mariadb_nodes::execute_query_all_nodes(const char* sql)
+int Mariadb_nodes::execute_query_all_nodes(const char* sql, ...)
 {
     int local_result = 0;
     connect();
+
+    va_list valist;
+    va_start(valist, sql);
+
     for (int i = 0; i < N; i++) {
-        local_result += execute_query(nodes[i], sql);
+        local_result += execute_query_va(nodes[i], sql, valist);
     }
+
+    va_end(valist);
     close_connections();
     return(local_result);
 }

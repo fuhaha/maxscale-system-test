@@ -580,10 +580,11 @@ public:
     /**
      * @brief try_query Executes SQL query and repors error
      * @param conn MYSQL struct
-     * @param sql SQL string
+     * @param sql SQL format string
+     * @param ... Variable arguments
      * @return 0 if ok
      */
-    int try_query(MYSQL *conn, const char *sql);
+    int try_query(MYSQL *conn, const char *sql, ...);
 
     /**
      * @brief try_query_all Executes SQL query on all MaxScale connections

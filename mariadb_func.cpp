@@ -168,6 +168,15 @@ MYSQL * open_conn_no_db(int port, const char* ip, const char*User, const char*Pa
     return(open_conn_db_flags(port, ip, NULL, User, Password, CLIENT_MULTI_STATEMENTS, ssl));
 }
 
+int execute_query_va(MYSQL *conn, const char *format, va_list list)
+{
+    int message_len = vsnprintf(NULL, 0, format, list);
+    char sql[message_len + 1];
+    vsnprintf(sql, sizeof(sql), format, list);
+
+    return(execute_query1(conn, sql, false));
+}
+
 /**
  * Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clea up returns
  *
