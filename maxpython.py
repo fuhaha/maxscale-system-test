@@ -16,7 +16,7 @@ class SQLConnection:
     # Connect to a server
     def connect(self, options = ""):
         try:
-            self.conn = jaydebeapi.connect("org.mariadb.jdbc.Driver", ["jdbc:mariadb://" + self.host + ":" + self.port + "/test?" + options, self.user, self.password],"./maxscale/java/mariadb-java-client-1.3.3.jar")
+            self.conn = jaydebeapi.connect("org.mariadb.jdbc.Driver", ["jdbc:mariadb://" + self.host + ":" + self.port + "/test?" + options, self.user, self.password],"./maxscale/java/mariadb-java-client-1.5.4.jar")
         except Exception as ex:
             print("Failed to connect to " + self.host + ":" + self.port + " as " + self.user + ":" + self.password)
             print(unicode(ex))
