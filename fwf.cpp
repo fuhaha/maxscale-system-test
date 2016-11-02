@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     int i;
 
     for (i = 1; i < N+1; i++){
-        Test->set_timeout(60);
+        Test->set_timeout(180);
         local_result = 0;
 
         Test->stop_maxscale();
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         if (file != NULL) {
             Test->tprintf("********** Trying queries that should FAIL ********** \n");
             while (fgets(sql, sizeof(sql), file)) {
-                Test->set_timeout(60);
+                Test->set_timeout(180);
                 if (strlen(sql) > 1) {
                     Test->tprintf("%s", sql);
                     execute_query(Test->conn_rwsplit, sql);
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
         mysql_close(Test->conn_rwsplit);
     }
 
-    Test->set_timeout(60);
+    Test->set_timeout(180);
     Test->stop_maxscale();
 
     // Test for at_times clause
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Waiting 3 minutes and trying 'DELETE FROM t1', expecting OK\n");
     Test->stop_timeout();
     sleep(180);
-    Test->set_timeout(60);
+    Test->set_timeout(180);
     Test->try_query(Test->conn_rwsplit, "DELETE FROM t1");
 
     mysql_close(Test->conn_rwsplit);
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
         Test->add_result(1, "Queries were blocked during wrong time\n");
     }
 
-    Test->set_timeout(60);
+    Test->set_timeout(180);
     printf("Trying 20 quries, 1 query / second\n");
     for (i = 0; i < 20; i++) {
         sleep(1);
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
         Test->tprintf("%d ", i);
     }
     Test->tprintf("\n");
-    Test->set_timeout(60);
+    Test->set_timeout(180);
     Test->stop_maxscale();
 
     Test->tprintf("Trying rules with syntax error\n");
