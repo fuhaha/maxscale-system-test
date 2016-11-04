@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     Test->check_maxscale_alive();
 
     Test->tprintf("Maxscale_full_version_start:");
-    Test->ssh_maxscale(FALSE, "maxscale --version-full"); fflush(stdout);
+    Test->ssh_maxscale(false, "maxscale --version-full"); fflush(stdout);
     Test->tprintf("Maxscale_full_version_end:");
 
     Test->copy_all_logs(); return(Test->global_result);

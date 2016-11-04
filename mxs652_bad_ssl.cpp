@@ -17,11 +17,11 @@ int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(10);
-    Test->check_log_err((char *) "Unexpected parameter 'ssl_version'", TRUE);
+    Test->check_log_err((char *) "Unexpected parameter 'ssl_version'", true);
 
 
     Test->tprintf("Trying RWSplit, expecting fault\n");
-    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, FALSE);
+    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, false);
 
     if (mysql_errno(conn) == 0)
     {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     }
 
     Test->tprintf("Trying ReadConn master, expecting fault\n");
-    conn = open_conn(Test->readconn_master_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, FALSE);
+    conn = open_conn(Test->readconn_master_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, false);
 
     if (mysql_errno(conn) == 0)
     {
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     }
 
     Test->tprintf("Trying ReadConn slave, expecting fault\n");
-    conn = open_conn(Test->readconn_slave_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, FALSE);
+    conn = open_conn(Test->readconn_slave_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, false);
 
     if (mysql_errno(conn) == 0)
     {

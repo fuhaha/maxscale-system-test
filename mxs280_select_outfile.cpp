@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < Test->repl->N; i++)
     {
         Test->set_timeout(30);
-        Test->repl->ssh_node(i, (char *) "touch /tmp/t1.csv", TRUE);
+        Test->repl->ssh_node(i, (char *) "touch /tmp/t1.csv", true);
     }
 
     Test->add_result(create_t1(Test->conn_rwsplit), "Error creating t1\n");
@@ -43,13 +43,13 @@ int main(int argc, char *argv[])
     for (i = 0; i < Test->repl->N; i++)
     {
         Test->set_timeout(30);
-        Test->repl->ssh_node(i, (char *) "rm -rf /tmp/t1.csv", TRUE);
+        Test->repl->ssh_node(i, (char *) "rm -rf /tmp/t1.csv", true);
     }
 
     Test->set_timeout(30);
     sleep(5);
-    Test->check_log_err((char *) "Failed to execute session command in", TRUE);
-    Test->check_log_err((char *) "File '/tmp/t1.csv' already exists", TRUE);
+    Test->check_log_err((char *) "Failed to execute session command in", true);
+    Test->check_log_err((char *) "File '/tmp/t1.csv' already exists", true);
 
     Test->copy_all_logs(); return(Test->global_result);
 }

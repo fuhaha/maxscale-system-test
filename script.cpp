@@ -38,7 +38,7 @@ void test_script_monitor(TestConnections* Test, Mariadb_nodes* nodes, char * exp
     Test->ssh_maxscale(false, "rm -f %s/script_output", Test->maxscale_access_homedir);
 
     Test->tprintf("%s\n", str);fflush(stdout);
-    Test->ssh_maxscale(FALSE, "%s touch %s/script_output; %s chown maxscale:maxscale %s/script_output",
+    Test->ssh_maxscale(false, "%s touch %s/script_output; %s chown maxscale:maxscale %s/script_output",
                        Test->maxscale_access_sudo, Test->maxscale_access_homedir,
                        Test->maxscale_access_sudo, Test->maxscale_access_homedir);
 

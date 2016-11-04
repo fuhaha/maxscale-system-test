@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Execute one more session command and expect message in error log\n");
     execute_query(Test->conn_rwsplit, "set @test=11");
     sleep(5);
-    Test->check_log_err((char *) "Router session exceeded session command history limit", TRUE);
+    Test->check_log_err((char *) "Router session exceeded session command history limit", true);
     Test->close_maxscale_connections();
 
     Test->copy_all_logs(); return(Test->global_result);

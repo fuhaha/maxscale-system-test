@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(600);
     Test->stop_maxscale();
-    Test->ssh_maxscale(TRUE, (char *) "rm -rf /var/lib/maxscale/avro");
+    Test->ssh_maxscale(true, (char *) "rm -rf /var/lib/maxscale/avro");
 
-    //Test->ssh_maxscale(TRUE, (char *) "mkdir /var/lib/maxscale/avro; chown -R maxscale:maxscale /var/lib/maxscale/avro");
+    //Test->ssh_maxscale(true, (char *) "mkdir /var/lib/maxscale/avro; chown -R maxscale:maxscale /var/lib/maxscale/avro");
 
     Test->repl->connect();
     execute_query(Test->repl->nodes[0], (char *) "DROP TABLE IF EXISTS t1;");
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
     Test->stop_maxscale();
 
-    Test->ssh_maxscale(TRUE, (char *) "rm -rf /var/lib/maxscale/avro");
+    Test->ssh_maxscale(true, (char *) "rm -rf /var/lib/maxscale/avro");
 
     Test->set_timeout(120);
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     sleep(10);
 
-    char * avro_check = Test->ssh_maxscale_output(TRUE, " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
+    char * avro_check = Test->ssh_maxscale_output(true, " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
 
     //printf("%s\n", avro_check);
 

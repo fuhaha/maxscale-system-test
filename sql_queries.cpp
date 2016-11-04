@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
         Test->stop_timeout();
 
         Test->set_timeout(5);
-        Test->add_result(Test->check_t1_table(FALSE, (char *) "test"), "t1 is found in 'test'\n");
-        Test->add_result(Test->check_t1_table(TRUE, (char *) "test1"), "t1 is not found in 'test1'\n");
+        Test->add_result(Test->check_t1_table(false, (char *) "test"), "t1 is found in 'test'\n");
+        Test->add_result(Test->check_t1_table(true, (char *) "test1"), "t1 is not found in 'test1'\n");
 
         Test->tprintf("Trying queries with syntax errors\n");
         for (j = 0; j < 3; j++)
@@ -101,9 +101,9 @@ int main(int argc, char *argv[])
     }
 
     Test->stop_timeout();
-    Test->check_log_err((char *) "Length (0) is 0", FALSE);
-    Test->check_log_err((char *) "Unable to parse query", FALSE);
-    Test->check_log_err((char *) "query string allocation failed", FALSE);
+    Test->check_log_err((char *) "Length (0) is 0", false);
+    Test->check_log_err((char *) "Unable to parse query", false);
+    Test->check_log_err((char *) "query string allocation failed", false);
 
     Test->set_timeout(5);
     Test->check_maxscale_alive();

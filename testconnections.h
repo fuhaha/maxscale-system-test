@@ -1,6 +1,12 @@
 #ifndef TESTCONNECTIONS_H
 #define TESTCONNECTIONS_H
 
+#include <sys/time.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "mariadb_nodes.h"
 
 /**
@@ -540,7 +546,7 @@ public:
      * @brief Checks if table t1 exists in DB
      * @param presence expected result
      * @param db DB name
-     * @return 0 if (t1 table exists AND presence=TRUE) OR (t1 table does not exist AND presence=FALSE)
+     * @return 0 if (t1 table exists AND presence=true) OR (t1 table does not exist AND presence=false)
      */
 
     int check_t1_table(bool presence, char * db);
@@ -548,8 +554,8 @@ public:
     /**
      * @brief CheckLogErr Reads error log and tried to search for given string
      * @param err_msg Error message to search in the log
-     * @param expected TRUE if err_msg is expedted in the log, FALSE if err_msg should NOT be in the log
-     * @return 0 if (err_msg is found AND expected is TRUE) OR (err_msg is NOT found in the log AND expected is FALSE)
+     * @param expected true if err_msg is expedted in the log, false if err_msg should NOT be in the log
+     * @return 0 if (err_msg is found AND expected is true) OR (err_msg is NOT found in the log AND expected is false)
      */
     void check_log_err(const char * err_msg, bool expected);
 

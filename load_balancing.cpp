@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating query load with %d threads...\n", threads_num);
     Test->set_timeout(1200);
-    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, TRUE);
+    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, false, true);
 
     long int avr = (i1 + i2 ) / (Test->repl->N);
     Test->tprintf("average number of quries per node %ld\n", avr);

@@ -1,4 +1,5 @@
 #include "big_load.h"
+#include <pthread.h>
 
 void load(long int *new_inserts, long int *new_selects, long int *selects, long int *inserts, int threads_num, TestConnections * Test, long int *i1, long int *i2, int rwsplit_only, bool galera, bool report_errors)
 {

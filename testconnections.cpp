@@ -1,3 +1,6 @@
+#include <cstdarg>
+#include <sys/time.h>
+#include <pthread.h>
 #include "testconnections.h"
 #include "sql_t1.h"
 #include <getopt.h>
@@ -121,9 +124,9 @@ copy_logs(true)
 
     repl->truncate_mariadb_logs();
     galera->truncate_mariadb_logs();
-    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
-    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
-    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
+    ssh_maxscale(true, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
+    ssh_maxscale(true, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
+    ssh_maxscale(true, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
 
     // Create DB user on master and on first Galera node
     //sprintf(str, "%s/create_user.sh", test_dir);
@@ -133,10 +136,10 @@ copy_logs(true)
 
     //sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
     //tprintf("cmd: %s\n", str);
-    //repl->ssh_node(0, str, FALSE);
+    //repl->ssh_node(0, str, false);
 
     //sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
-    //galera->ssh_node(0, str, FALSE);
+    //galera->ssh_node(0, str, false);
 
     repl->flush_hosts();
     galera->flush_hosts();
@@ -181,11 +184,11 @@ copy_logs(true)
     if (backend_ssl)
     {
         tprintf("Configuring backends for ssl \n");
-        repl->configure_ssl(TRUE);
-        ssl = TRUE;
-        repl->ssl = TRUE;
-        galera->configure_ssl(FALSE);
-        galera->ssl = TRUE;
+        repl->configure_ssl(true);
+        ssl = true;
+        repl->ssl = true;
+        galera->configure_ssl(false);
+        galera->ssl = true;
         galera->start_galera();
         /*tprintf("Restarting Maxscale\n");
         restart_maxscale();
@@ -389,27 +392,27 @@ int TestConnections::init_maxscale()
     }
 
     copy_to_maxscale((char *) "maxscale.cnf", (char *) "./");
-    ssh_maxscale(TRUE, "cp maxscale.cnf %s", maxscale_cnf);
-    ssh_maxscale(TRUE, "rm -rf %s/certs", maxscale_access_homedir);
-    ssh_maxscale(FALSE, "mkdir %s/certs", maxscale_access_homedir);
+    ssh_maxscale(true, "cp maxscale.cnf %s", maxscale_cnf);
+    ssh_maxscale(true, "rm -rf %s/certs", maxscale_access_homedir);
+    ssh_maxscale(false, "mkdir %s/certs", maxscale_access_homedir);
     sprintf(str, "%s/ssl-cert/*", test_dir);
     copy_to_maxscale(str, (char *) "./certs/");
     sprintf(str, "cp %s/ssl-cert/* .", test_dir); system(str);
-    ssh_maxscale(TRUE,  "chown maxscale:maxscale -R %s/certs", maxscale_access_homedir);
-    ssh_maxscale(TRUE, "chmod 664 %s/certs/*.pem; chmod a+x %s", maxscale_access_homedir, maxscale_access_homedir);
+    ssh_maxscale(true,  "chown maxscale:maxscale -R %s/certs", maxscale_access_homedir);
+    ssh_maxscale(true, "chmod 664 %s/certs/*.pem; chmod a+x %s", maxscale_access_homedir, maxscale_access_homedir);
 
-    ssh_maxscale(TRUE, "service maxscale stop");
-    ssh_maxscale(TRUE, "killall -9 maxscale");
+    ssh_maxscale(true, "service maxscale stop");
+    ssh_maxscale(true, "killall -9 maxscale");
 
-    ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale.log ; %s chown maxscale:maxscale %s/maxscale.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
-    ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale1.log ; %s chown maxscale:maxscale %s/maxscale1.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
-    ssh_maxscale(TRUE, "rm -f /tmp/core*");
-    ssh_maxscale(TRUE, "rm -rf /dev/shm/*");
+    ssh_maxscale(true, "truncate -s 0 %s/maxscale.log ; %s chown maxscale:maxscale %s/maxscale.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
+    ssh_maxscale(true, "truncate -s 0 %s/maxscale1.log ; %s chown maxscale:maxscale %s/maxscale1.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
+    ssh_maxscale(true, "rm -f /tmp/core*");
+    ssh_maxscale(true, "rm -rf /dev/shm/*");
 
-    ssh_maxscale(FALSE, "printenv > test.environment");
+    ssh_maxscale(false, "printenv > test.environment");
     fflush(stdout);
 
-    ssh_maxscale(TRUE, "ulimit -c unlimited; %s service maxscale restart", maxscale_access_sudo);
+    ssh_maxscale(true, "ulimit -c unlimited; %s service maxscale restart", maxscale_access_sudo);
 
     int waits;
 
@@ -477,7 +480,7 @@ int TestConnections::copy_mariadb_logs(Mariadb_nodes * repl, char * prefix)
     system(str);
     for (i = 0; i < repl->N; i++)
     {
-        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", TRUE);
+        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", true);
         sprintf(str, "LOGS/%s/%s%d_mariadb_log", test_name, prefix, i);
         f = fopen(str, "w");
         if (f != NULL)
@@ -1357,11 +1360,11 @@ int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
 
 int TestConnections::execute_maxadmin_command(char * cmd)
 {
-    return(ssh_maxscale(TRUE, "maxadmin %s", cmd));
+    return(ssh_maxscale(true, "maxadmin %s", cmd));
 }
 int TestConnections::execute_maxadmin_command_print(char * cmd)
 {
-    printf("%s\n", ssh_maxscale_output(TRUE, "maxadmin %s", cmd));
+    printf("%s\n", ssh_maxscale_output(true, "maxadmin %s", cmd));
     return 0;
 }
 
@@ -1403,7 +1406,7 @@ int TestConnections::get_maxadmin_param(char *command, char *param, char *result
 {
     char		* buf;
 
-    buf = ssh_maxscale_output(TRUE, "maxadmin %s", command);
+    buf = ssh_maxscale_output(true, "maxadmin %s", command);
 
     //printf("%s\n", buf);
 
@@ -1438,16 +1441,16 @@ int TestConnections::list_dirs()
     for (int i = 0; i < repl->N; i++)
     {
         tprintf("ls on node %d\n", i);
-        repl->ssh_node(i, (char *) "ls -la /var/lib/mysql", TRUE); fflush(stdout);
+        repl->ssh_node(i, (char *) "ls -la /var/lib/mysql", true); fflush(stdout);
     }
     tprintf("ls maxscale \n");
-    ssh_maxscale(TRUE, "ls -la /var/lib/maxscale/"); fflush(stdout);
+    ssh_maxscale(true, "ls -la /var/lib/maxscale/"); fflush(stdout);
     return 0;
 }
 
 long unsigned TestConnections::get_maxscale_memsize()
 {
-    char * ps_out = ssh_maxscale_output(FALSE, "ps -e -o pid,vsz,comm= | grep maxscale");
+    char * ps_out = ssh_maxscale_output(false, "ps -e -o pid,vsz,comm= | grep maxscale");
     long unsigned mem = 0;
     pid_t pid;
     sscanf(ps_out, "%d %lu", &pid, &mem);

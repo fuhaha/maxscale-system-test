@@ -40,9 +40,9 @@ int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(10);
-    Test->check_log_err((char *) "Unsupported router option \"slave\"", TRUE);
-    Test->check_log_err((char *) "Failed to start all MaxScale services. Exiting", TRUE);
-    Test->check_log_err((char *) "Couldn't find suitable Master", FALSE);
+    Test->check_log_err((char *) "Unsupported router option \"slave\"", true);
+    Test->check_log_err((char *) "Failed to start all MaxScale services. Exiting", true);
+    Test->check_log_err((char *) "Couldn't find suitable Master", false);
     //Test->check_maxscale_alive();
     Test->check_maxscale_processes(0);
     Test->copy_all_logs(); return(Test->global_result);

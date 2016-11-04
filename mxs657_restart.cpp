@@ -73,11 +73,11 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating query load with %d threads and use maxadmin service restart...\n", threads_num);
     Test->set_timeout(1200);
-    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, FALSE);
+    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, false, false);
     restart_flag = 1;
     Test->set_timeout(1200);
     Test->tprintf("Creating query load with %d threads and restart maxscalen", threads_num);
-    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, FALSE);
+    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, false, false);
 
     Test->tprintf("Exiting ...\n");
     exit_flag = 1;

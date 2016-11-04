@@ -255,7 +255,7 @@ int Mariadb_nodes::start_replication()
 
     sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
     printf("cmd: %s\n", str);
-    ssh_node(0, str, FALSE);
+    ssh_node(0, str, false);
 
     for (i = 1; i < N; i++) {
         printf("Starting node %d\n", i); fflush(stdout);
@@ -266,7 +266,7 @@ int Mariadb_nodes::start_replication()
 
         sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
         printf("cmd: %s\n", str);
-        ssh_node(i, str, FALSE);
+        ssh_node(i, str, false);
     }
     sleep(5);
 
@@ -305,7 +305,7 @@ int Mariadb_nodes::start_galera()
     copy_to_node(str, (char *) "~/", 0);
 
     sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", user_name, password);
-    ssh_node(0, str, FALSE);
+    ssh_node(0, str, false);
 
     for (i = 1; i < N; i++) {
         printf("Starting node %d\n", i); fflush(stdout);
@@ -337,12 +337,12 @@ int Mariadb_nodes::clean_iptables(int node)
             chmod a+x  clean_iptables.sh \n sudo  ./clean_iptables.sh \n";
     sprintf(&sys1[0], clean_command, port[node]);
     printf("%s\n", sys1);
-    ssh_node(node, sys1, FALSE);*/
-    local_result += ssh_node(node, (char *) "echo \"#!/bin/bash\" > clean_iptables.sh", FALSE);
+    ssh_node(node, sys1, false);*/
+    local_result += ssh_node(node, (char *) "echo \"#!/bin/bash\" > clean_iptables.sh", false);
     sprintf(sys1, "echo \"while [ \\\"\\$(iptables -n -L INPUT 1|grep '%d')\\\" != \\\"\\\" ]; do iptables -D INPUT 1; done\" >>  clean_iptables.sh", port[node]);
-    local_result += ssh_node(node, (char *) sys1, FALSE);
-    local_result += ssh_node(node, (char *) "chmod a+x clean_iptables.sh", FALSE);
-    local_result += ssh_node(node, (char *) "./clean_iptables.sh", TRUE);
+    local_result += ssh_node(node, (char *) sys1, false);
+    local_result += ssh_node(node, (char *) "chmod a+x clean_iptables.sh", false);
+    local_result += ssh_node(node, (char *) "./clean_iptables.sh", true);
     return(local_result);
 }
 
@@ -357,7 +357,7 @@ int Mariadb_nodes::block_node(int node)
         printf("%s\n", sys1);
         fflush(stdout);
     }
-    local_result += ssh_node(node, sys1, TRUE);
+    local_result += ssh_node(node, sys1, true);
     return(local_result);
 }
 
@@ -372,7 +372,7 @@ int Mariadb_nodes::unblock_node(int node)
         printf("%s\n", sys1);
         fflush(stdout);
     }
-    local_result += ssh_node(node, sys1, TRUE);
+    local_result += ssh_node(node, sys1, true);
     return(local_result);
 }
 
@@ -700,7 +700,7 @@ int Mariadb_nodes::truncate_mariadb_logs()
     int local_result = 0;
     for (int i = 0; i < N; i++)
     {
-        local_result += ssh_node(i, (char *) "truncate  /var/lib/mysql/*.err --size 0", TRUE);
+        local_result += ssh_node(i, (char *) "truncate  /var/lib/mysql/*.err --size 0", true);
     }
     return local_result;
 }
@@ -718,9 +718,9 @@ int Mariadb_nodes::configure_ssl(bool require)
         local_result += copy_to_node(str, (char *) "~/", i);
         sprintf(str, "%s/ssl.cnf", test_dir);
         local_result += copy_to_node(str, (char *) "~/", i);
-        local_result += ssh_node(i, (char *) "cp ~/ssl.cnf /etc/my.cnf.d/", TRUE);
-        local_result += ssh_node(i, (char *) "cp -r ~/ssl-cert /etc/", TRUE);
-        local_result += ssh_node(i,  (char *) "chown mysql:mysql -R /etc/ssl-cert", TRUE);
+        local_result += ssh_node(i, (char *) "cp ~/ssl.cnf /etc/my.cnf.d/", true);
+        local_result += ssh_node(i, (char *) "cp -r ~/ssl-cert /etc/", true);
+        local_result += ssh_node(i,  (char *) "chown mysql:mysql -R /etc/ssl-cert", true);
         start_node(i,  (char *) "");
     }
 
@@ -732,7 +732,7 @@ int Mariadb_nodes::configure_ssl(bool require)
 
         sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user_ssl.sh", user_name, password);
         printf("cmd: %s\n", str);
-        ssh_node(0, str, FALSE);
+        ssh_node(0, str, false);
     }
 
     return local_result;
@@ -751,7 +751,7 @@ int Mariadb_nodes::disable_ssl()
     for (int i = 0; i < N; i++)
     {
         stop_node(i);
-        local_result += ssh_node(i, (char *) "rm -f /etc/my.cnf.d/ssl.cnf", TRUE);
+        local_result += ssh_node(i, (char *) "rm -f /etc/my.cnf.d/ssl.cnf", true);
         start_node(i,  (char *) "");
     }
 

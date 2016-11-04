@@ -127,11 +127,11 @@ int main(int argc, char *argv[])
     for (i=0; i<maxscale_conn_num; i++) {mysql_close(conn_rwsplit[i]);}
     Test->galera->close_connections();
 
-    Test->check_log_err((char *) "Unexpected parameter 'weightby'", FALSE);
-    Test->check_log_err((char *) "Weighting parameter 'serversize' with a value of 0 for server 'server4' rounds down to zero", TRUE);
+    Test->check_log_err((char *) "Unexpected parameter 'weightby'", false);
+    Test->check_log_err((char *) "Weighting parameter 'serversize' with a value of 0 for server 'server4' rounds down to zero", true);
 
     // Pre-1.3.0 failure message
-    //Test->check_log_err((char *) "Server 'server4' has no value for weighting parameter 'serversize', no queries will be routed to this server", TRUE);
+    //Test->check_log_err((char *) "Server 'server4' has no value for weighting parameter 'serversize', no queries will be routed to this server", true);
 
 
     Test->copy_all_logs(); return(Test->global_result);

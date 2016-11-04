@@ -13,7 +13,7 @@ int check_sha1(TestConnections* Test)
     Test->tprintf("ls before FLUSH LOGS\n");
 
     Test->tprintf("Master");
-    Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", FALSE);
+    Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", false);
 
     Test->tprintf("FLUSH LOGS\n");
     Test->try_query(Test->repl->nodes[0], (char *) "FLUSH LOGS");
@@ -22,7 +22,7 @@ int check_sha1(TestConnections* Test)
     Test->tprintf("ls after first FLUSH LOGS\n");
 
     Test->tprintf("Master\n");
-    Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", FALSE);
+    Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", false);
 
     Test->tprintf("FLUSH LOGS\n");
     Test->try_query(Test->repl->nodes[0], (char *) "FLUSH LOGS");
@@ -32,7 +32,7 @@ int check_sha1(TestConnections* Test)
     printf("ls before FLUSH LOGS\n");
 
     printf("Master");
-    Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", FALSE);
+    Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", false);
 
     return(Test->global_result);
 }

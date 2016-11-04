@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         Test->galera->close_connections();
 
         Test->set_timeout(1200);
-        load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, TRUE, TRUE);
+        load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, true, true);
 
         long int avr = (i1 + i2 ) / (Test->galera->N);
         Test->tprintf("average number of quries per node %ld\n", avr);

@@ -69,7 +69,7 @@ int check_sha1(TestConnections* Test)
 
         sprintf(sys, "sha1sum /var/lib/mysql/mar-bin.00000%d", i);
         Test->set_timeout(50);
-        s = Test->repl->ssh_node_output(0, sys, TRUE);
+        s = Test->repl->ssh_node_output(0, sys, true);
         if (s != NULL) {
             x = strchr(s, ' ');
             if (x != NULL ) { x[0] = 0; }

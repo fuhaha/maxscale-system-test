@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(30);
-    Test->check_log_err((char *) "Unexpected parameter 'укпоукц'", TRUE);
-    Test->check_log_err((char *) "Unexpected parameter 'hren'", TRUE);
+    Test->check_log_err((char *) "Unexpected parameter 'укпоукц'", true);
+    Test->check_log_err((char *) "Unexpected parameter 'hren'", true);
 
     Test->check_maxscale_processes(0);
     Test->copy_all_logs(); return(Test->global_result);

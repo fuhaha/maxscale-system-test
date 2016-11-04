@@ -1,6 +1,8 @@
 #ifndef MAXINFO_FUNC_H
 #define MAXINFO_FUNC_H
 
+#include "mariadb_func.h"
+
 int create_tcp_socket();
 char *get_ip(char *host);
 char *build_get_query(char *host, const char *page);

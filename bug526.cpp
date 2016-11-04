@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
 
     //sleep(5);
     Test->execute_maxadmin_command((char*) "sync logs");
-    Test->check_log_err((char *) "Unable to find library for module: foobar", TRUE);
-    Test->check_log_err((char *) "Failed to load filter module 'foobar'", TRUE);
-    Test->check_log_err((char *) "Failed to load filter 'testfilter' for service 'RW Split Router'", TRUE);
-    Test->check_log_err((char *) "Failed to open, read or process the MaxScale configuration file /etc/maxscale.cnf. Exiting", TRUE);
+    Test->check_log_err((char *) "Unable to find library for module: foobar", true);
+    Test->check_log_err((char *) "Failed to load filter module 'foobar'", true);
+    Test->check_log_err((char *) "Failed to load filter 'testfilter' for service 'RW Split Router'", true);
+    Test->check_log_err((char *) "Failed to open, read or process the MaxScale configuration file /etc/maxscale.cnf. Exiting", true);
 
     Test->copy_all_logs(); return(Test->global_result);
 }

@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     Test->tprintf("Checking logs\n");
-    Test->check_log_err((char *) "The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported", TRUE);
-    Test->check_log_err((char *) "SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all", TRUE);
+    Test->check_log_err((char *) "The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported", true);
+    Test->check_log_err((char *) "SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all", true);
 
     Test->check_maxscale_alive();
 

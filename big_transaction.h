@@ -1,8 +1,7 @@
 #ifndef BIG_TRANSACTION_H
 #define BIG_TRANSACTION_H
 
-#include <my_config.h>
-#include <my_global.h>
+#include <pthread.h>
 #include <mysql.h>
 #include <stdio.h>
 #include <stdlib.h>

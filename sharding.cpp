@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
     mysql_close(conn);
 
     Test->stop_timeout();
-    Test->check_log_err((char *) "Length (0) is 0", FALSE);
-    Test->check_log_err((char *) "Unable to parse query", FALSE);
-    Test->check_log_err((char *) "query string allocation failed", FALSE);
+    Test->check_log_err((char *) "Length (0) is 0", false);
+    Test->check_log_err((char *) "Unable to parse query", false);
+    Test->check_log_err((char *) "query string allocation failed", false);
 
     sleep(10);
 

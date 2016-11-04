@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     sleep(5);
 
     Test->check_maxscale_alive();
-    Test->check_log_err((char *) "received fatal signal", FALSE);
+    Test->check_log_err((char *) "received fatal signal", false);
     Test->copy_all_logs(); return(Test->global_result);
 }
 

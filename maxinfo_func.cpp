@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <string.h>
-
+#include <fcntl.h>
 #include <openssl/sha.h>
 #include "maxinfo_func.h"
 #include <sys/epoll.h>

@@ -3,24 +3,10 @@
 project(maxscale_system_test)
 cmake_minimum_required(VERSION 2.8)
 
-include(macros.cmake)
-
-set_maxscale_version()
-
-# Installation directory
-
-set(CMAKE_INSTALL_PREFIX "/usr/local/mariadb-maxscale" CACHE INTERNAL "Prefix prepended to install directories." FORCE)
-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/system-test)
-# Build type
-set(CMAKE_BUILD_TYPE "None" CACHE STRING "Build type, possible values are:None, Debug, Optimized.")
-
-check_deps()
-check_dirs()
-
 set(CTEST_BUILD_NAME "${BUILDNAME}")
 enable_testing()
-ENABLE_TESTING()
-INCLUDE(CTest)
+include(CTest)
+include(macros.cmake)
 
 # Enable Java
 find_package(Java)
@@ -31,21 +17,15 @@ else()
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/cnf/maxscale.cnf.template.setup_binlog.in ${CMAKE_BINARY_DIR}/cnf/maxscale.cnf.template.setup_binlog @ONLY)
-#configure_file(${CMAKE_SOURCE_DIR}/set_env.sh.in ${CMAKE_BINARY_DIR}/set_env.sh @ONLY)
-#configure_file(${CMAKE_SOURCE_DIR}/test_ctrl_c/test_ctrl_c.sh.in ${CMAKE_BINARY_DIR}/test_ctrl_c/test_ctrl_c.sh @ONLY)
 
-include_directories("/usr/include/mysql/")
-#LINK_DIRECTORIES("/usr/lib/x86_64-linux-gnu/")
-aux_source_directory(. SRC_LIST)
-
-
-
+# This is the core test library
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp config_check.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
   different_size.cpp fw_copy_rules maxinfo_func.cpp)
-target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
+target_link_libraries(testcore ${MARIADB_CONNECTOR_LIBRARIES} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
+add_dependencies(testcore connector-c)
 
 # Helper function to add a configuration template
 function(add_template name template)
