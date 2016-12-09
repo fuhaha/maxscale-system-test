@@ -358,7 +358,7 @@ public:
      * @param ssh command to execute
      * @param sudo if true the command is executed with root privelegues
      */
-    void generate_ssh_cmd(char * cmd, int node, char * ssh, bool sudo);
+    void generate_ssh_cmd(char * cmd, int node, const char *ssh, bool sudo);
 
     /**
      * @brief executes shell command on the node using ssh
@@ -367,7 +367,7 @@ public:
      * @param sudo if true the command is executed with root privelegues
      * @return output of the command
      */
-    char *ssh_node_output(int node, char * ssh, bool sudo);
+    char *ssh_node_output(int node, const char *ssh, bool sudo);
 
     /**
      * @brief executes shell command on the node using ssh
@@ -376,7 +376,7 @@ public:
      * @param sudo if true the command is executed with root privelegues
      * @return exit code of the coomand
      */
-    int ssh_node(int node, char * ssh, bool sudo);
+    int ssh_node(int node, const char *ssh, bool sudo);
 
     /**
      * @brief Execute 'mysqladmin flush-hosts' on all nodes
@@ -418,11 +418,20 @@ public:
     /**
      * @brief Copy a local file to the Node i machine
      * @param src Source file on the local filesystem
-     * @param dest Destination file on the MaxScale machine's file system
+     * @param dest Destination file on the remote file system
      * @param i Node index
      * @return exit code of the system command or 1 in case of i > N
      */
-    int copy_to_node(char* src, char* dest, int i);
+    int copy_to_node(const char* src, const char* dest, int i);
+
+    /**
+     * @brief Copy a local file to the Node i machine
+     * @param src Source file on the remote filesystem
+     * @param dest Destination file on the local file system
+     * @param i Node index
+     * @return exit code of the system command or 1 in case of i > N
+     */
+    int copy_from_node(const char* src, const char* dest, int i);
 
     /**
      * @brief Synchronize slaves with the master

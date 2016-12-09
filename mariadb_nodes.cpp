@@ -255,51 +255,41 @@ int Mariadb_nodes::start_replication()
     char str[1024];
     char log_file[256];
     char log_pos[256];
-    int i;
     int local_result = 0;
-    local_result += stop_nodes();
 
-    printf("Starting back Master\n"); fflush(stdout);
-    local_result += start_node(0, (char *) ""); fflush(stdout);
+    // Start all nodes
+    for (int i = 0; i < N; i++)
+    {
+        local_result += start_node(i, (char *) "");
+        ssh_node(i, "mysql -u root -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER;\"", true);
+    }
 
     sprintf(str, "%s/create_user.sh", test_dir);
-    copy_to_node(str, (char *) "~/", 0);
+    copy_to_node(str, "~/", 0);
 
     sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
     printf("cmd: %s\n", str);
     ssh_node(0, str, false);
 
-    for (i = 1; i < N; i++) {
+
+    // Create a database dump from the master and distribute it to the slaves
+    ssh_node(0, "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 > /tmp/master_backup.sql", true);
+    sprintf(str, "%s/master_backup.sql", test_dir);
+    copy_from_node("/tmp/master_backup.sql", str, 0);
+
+    for (int i = 1; i < N; i++) {
+        // Reset all nodes by first loading the dump and then starting the replication
         printf("Starting node %d\n", i); fflush(stdout);
-        local_result += start_node(i, (char *) ""); fflush(stdout);
-
-        sprintf(str, "%s/create_user.sh", test_dir);
-        copy_to_node(str, (char *) "~/", i);
-
-        sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
-        printf("cmd: %s\n", str);
-        ssh_node(i, str, false);
+        copy_to_node(str, "/tmp/master_backup.sql", i);
+        ssh_node(i, "mysql -u root < /tmp/master_backup.sql", true);
+        char query[512];
+        sprintf(query, "mysql -u root -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
+                "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\";"
+                "START SLAVE;\"", IP_private[0], port[0]);
+        ssh_node(i, query, true);
     }
-    sleep(5);
 
-    local_result += connect();
-    local_result += execute_query(nodes[0], create_repl_user);
-    execute_query(nodes[0], (char *) "reset master;");
-    execute_query(nodes[0], (char *) "stop slave;");
-
-    find_field(nodes[0], (char *) "show master status", (char *) "File", &log_file[0]);
-    find_field(nodes[0], (char *) "show master status", (char *) "Position", &log_pos[0]);
-    for (i = 1; i < N; i++) {
-        local_result += execute_query(nodes[i], (char *) "stop slave;");
-        sprintf(str, setup_slave, IP_private[0], log_file, log_pos, port[0]);
-        if (this->verbose)
-        {
-            printf("%s", str);
-        }
-        local_result += execute_query(nodes[i], str);
-    }
-    close_connections();
-    return(local_result);
+    return local_result;
 }
 
 int Mariadb_nodes::start_galera()
@@ -314,7 +304,7 @@ int Mariadb_nodes::start_galera()
     local_result += start_node(0, (char *) " --wsrep-cluster-address=gcomm://");
 
     sprintf(str, "%s/create_user_galera.sh", test_dir);
-    copy_to_node(str, (char *) "~/", 0);
+    copy_to_node(str, "~/", 0);
 
     sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", user_name, password);
     ssh_node(0, str, false);
@@ -653,7 +643,7 @@ int Mariadb_nodes::get_server_id(int index)
     return id;
 }
 
-void Mariadb_nodes::generate_ssh_cmd(char * cmd, int node, char * ssh, bool sudo)
+void Mariadb_nodes::generate_ssh_cmd(char *cmd, int node, const char *ssh, bool sudo)
 {
     if (sudo)
     {
@@ -666,7 +656,7 @@ void Mariadb_nodes::generate_ssh_cmd(char * cmd, int node, char * ssh, bool sudo
     }
 }
 
-char * Mariadb_nodes::ssh_node_output(int node, char * ssh, bool sudo)
+char * Mariadb_nodes::ssh_node_output(int node, const char *ssh, bool sudo)
 {
     char sys[strlen(ssh) + 1024];
     generate_ssh_cmd(sys, node, ssh, sudo);
@@ -690,11 +680,10 @@ char * Mariadb_nodes::ssh_node_output(int node, char * ssh, bool sudo)
     return result;
 }
 
-int Mariadb_nodes::ssh_node(int node, char * ssh, bool sudo)
+int Mariadb_nodes::ssh_node(int node, const char *ssh, bool sudo)
 {
     char sys[strlen(ssh) + 1024];
     generate_ssh_cmd(sys, node, ssh, sudo);
-    //printf("sys: %s\n", sys);
     return(system(sys));
 }
 
@@ -831,7 +820,7 @@ int Mariadb_nodes::disable_ssl()
     return local_result;
 }
 
-int Mariadb_nodes::copy_to_node(char* src, char* dest, int i)
+int Mariadb_nodes::copy_to_node(const char* src, const char* dest, int i)
 {
     if (i >= N)
     {
@@ -839,10 +828,35 @@ int Mariadb_nodes::copy_to_node(char* src, char* dest, int i)
     }
     char sys[strlen(src) + strlen(dest) + 1024];
 
-    sprintf(sys, "scp -r -i %s -o UserKnownHostsFile=/dev/null "
+    sprintf(sys, "scp -q -r -i %s -o UserKnownHostsFile=/dev/null "
             "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
             sshkey[i], src, access_user[i], IP[i], dest);
-    printf("%s\n", sys);
+
+    if (verbose)
+    {
+        printf("%s\n", sys);
+    }
+
+    return system(sys);
+}
+
+
+int Mariadb_nodes::copy_from_node(const char* src, const char* dest, int i)
+{
+    if (i >= N)
+    {
+        return 1;
+    }
+    char sys[strlen(src) + strlen(dest) + 1024];
+
+    sprintf(sys, "scp -q -r -i %s -o UserKnownHostsFile=/dev/null "
+            "-o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s:%s %s",
+            sshkey[i], access_user[i], IP[i], src, dest);
+
+    if (verbose)
+    {
+        printf("%s\n", sys);
+    }
 
     return system(sys);
 }
