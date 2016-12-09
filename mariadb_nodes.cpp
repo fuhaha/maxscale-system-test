@@ -13,6 +13,7 @@
 
 #include "mariadb_nodes.h"
 #include "sql_const.h"
+#include <string>
 
 Mariadb_nodes::Mariadb_nodes(char * pref)
 {
@@ -443,17 +444,16 @@ int Mariadb_nodes::check_replication(int master)
         fflush(stdout);
     }
 
+    if (this->nodes[0] == NULL)
+    {
+        this->connect();
+    }
+
     res1 = get_versions();
 
     for (int i = 0; i < N; i++) {
-        conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
-        if (mysql_errno(conn) != 0) {
-            printf("Error connectiong node %d with maxskysql user\n", i); fflush(stdout);
-            res1 = 1;
-        }
-        if (conn != NULL ) {mysql_close(conn);}
+        conn = nodes[i];
 
-        conn = open_conn(port[i], IP[i], user_name, password, ssl);
         if (mysql_errno(conn) != 0) {
             printf("Error connectiong node %d\n", i); fflush(stdout);
             res1 = 1;
@@ -511,7 +511,6 @@ int Mariadb_nodes::check_replication(int master)
                 }
             }
         }
-        mysql_close(conn);
     }
 
     return(res1);
@@ -689,26 +688,25 @@ int Mariadb_nodes::ssh_node(int node, const char *ssh, bool sudo)
 
 int Mariadb_nodes::flush_hosts()
 {
+
+    if (this->nodes[0] == NULL)
+    {
+        this->connect();
+    }
+
     int local_result = 0;
+
     for (int i = 0; i < N; i++)
     {
-        int rc = 1;
-
-        MYSQL *conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
-        if (conn)
+        if (mysql_query(nodes[i], "FLUSH HOSTS"))
         {
-            if(mysql_query(conn, (char *) "FLUSH HOSTS") == 0)
-            {
-                rc = 0;
-            }
-            else
-            {
-                printf("%s\n", mysql_error(conn));
-            }
-            mysql_close(conn);
+            local_result++;
         }
 
-        local_result += rc;
+        if (mysql_query(nodes[i], "SET GLOBAL max_connections=10000"))
+        {
+            local_result++;
+        }
     }
 
     return local_result;
@@ -730,7 +728,7 @@ int Mariadb_nodes::get_versions()
     int local_result = 0;
     char * str;
     v51 = false;
-    connect();
+
     for (int i = 0; i < N; i++) {
         local_result += find_field(nodes[i], (char *) "SELECT @@version", (char *) "@@version", version[i]);
         strcpy(version_number[i], version[i]);
@@ -743,7 +741,7 @@ int Mariadb_nodes::get_versions()
         if (verbose)
             printf("Node %s%d: %s\t %s \t %s\n", prefix, i, version[i], version_number[i], version_major[i]);
     }
-    close_connections();
+
     for (int i = 0; i < N; i++)
     {
         if (strcmp(version_major[i], "5.1") == 0)
@@ -751,6 +749,7 @@ int Mariadb_nodes::get_versions()
             v51 = true;
         }
     }
+
     return(local_result);
 }
 
@@ -922,6 +921,36 @@ void Mariadb_nodes::sync_slaves()
                 }
             }
             mysql_free_result(res);
+        }
+    }
+}
+
+void Mariadb_nodes::close_active_connections()
+{
+    if (this->nodes[0] == NULL)
+    {
+        this->connect();
+    }
+
+    const char *sql = "select id from information_schema.processlist where id != @@pseudo_thread_id and user not in ('system user', 'repl')";
+
+    for (int i = 0; i < N; i++)
+    {
+        if (!mysql_query(nodes[i], sql))
+        {
+            MYSQL_RES *res = mysql_store_result(nodes[i]);
+            if (res)
+            {
+                MYSQL_ROW row;
+
+                while ((row = mysql_fetch_row(res)))
+                {
+                    std::string q("KILL ");
+                    q += row[0];
+                    execute_query_silent(nodes[i], q.c_str());
+                }
+                mysql_free_result(res);
+            }
         }
     }
 }

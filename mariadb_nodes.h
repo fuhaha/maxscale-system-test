@@ -440,6 +440,13 @@ public:
      * The function expects that the first node, @c nodes[0], is the master.
      */
     void sync_slaves();
+
+    /**
+     * @brief Close all connections to this node
+     *
+     * This will kill all connections that have been created to this node.
+     */
+    void close_active_connections();
 };
 
 #endif // MARIADB_NODES_H
