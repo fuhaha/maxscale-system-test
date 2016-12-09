@@ -181,6 +181,12 @@ copy_logs(true), use_snapshots(false), verbose(false)
                     if (repl->check_replication(0))
                     {
                         tprintf("Backend broken! Restarting replication nodes\n");
+
+                        if (attempts != 2)
+                        {
+                            repl->stop_nodes();
+                        }
+
                         repl->start_replication();
                         err++;
                     }
@@ -188,6 +194,12 @@ copy_logs(true), use_snapshots(false), verbose(false)
                     if (galera->check_galera())
                     {
                         tprintf("Backend broken! Restarting Galera nodes\n");
+
+                        if (attempts != 2)
+                        {
+                            galera->stop_nodes();
+                        }
+
                         galera->start_galera();
                         err++;
                     }
