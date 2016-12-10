@@ -15,13 +15,18 @@
 #include "sql_const.h"
 #include <string>
 
-Mariadb_nodes::Mariadb_nodes(char * pref)
+Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
     memset(blocked, 0, sizeof(blocked));
     no_set_pos = false;
-    verbose = true;
+    this->verbose = verbose;
+    strcpy(test_dir, test_cwd);
+    read_env();
+    truncate_mariadb_logs();
+    flush_hosts();
+    close_active_connections();
 }
 
 Mariadb_nodes::~Mariadb_nodes()

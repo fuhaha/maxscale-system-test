@@ -17,9 +17,6 @@ int main(int argc, char *argv[])
     long int new_selects[256];
     long int new_inserts[256];
 
-    Test->read_env();
-    Test->print_env();
-
     Test->galera->execute_query_all_nodes((char *) "set global max_connections = 20;");
 
     Test->set_timeout(1200);

@@ -11,25 +11,15 @@
 #include <pthread.h>
 
 TestConnections::TestConnections(int argc, char *argv[]):
-copy_logs(true), use_snapshots(false), verbose(false)
+copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
+    readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
+    global_result(0)
 {
     //char str[1024];
     gettimeofday(&start_time, NULL);
-    galera = new Mariadb_nodes((char *)"galera");
-    repl   = new Mariadb_nodes((char *)"node");
-
-    test_name = basename(argv[0]);
-
-    rwsplit_port = 4006;
-    readconn_master_port = 4008;
-    readconn_slave_port = 4009;
     ports[0] = rwsplit_port;
     ports[1] = readconn_master_port;
     ports[2] = readconn_slave_port;
-
-    binlog_port = 5306;
-
-    global_result = 0;
 
     read_env();
 
@@ -38,17 +28,15 @@ copy_logs(true), use_snapshots(false), verbose(false)
     realpath(short_path, test_dir);
     printf("test_dir is %s\n", test_dir);
     setenv("test_dir", test_dir, 1);
-    strcpy(repl->test_dir, test_dir);
-    strcpy(galera->test_dir, test_dir);
     sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
 
     sprintf(ssl_options, "--ssl-cert=%s/ssl-cert/client-cert.pem --ssl-key=%s/ssl-cert/client-key.pem",
             test_dir, test_dir);
     setenv("ssl_options", ssl_options, 1);
 
-    no_maxscale_stop = false;
-    no_maxscale_start = false;
-    //no_nodes_check = false;
+    bool no_maxscale_stop = false;
+    bool no_maxscale_start = false;
+    no_nodes_check = false;
 
     int c;
     bool run_flag = true;
@@ -133,9 +121,13 @@ copy_logs(true), use_snapshots(false), verbose(false)
     {
         test_name = argv[optind];
     }
+    else
+    {
+        test_name = basename(argv[0]);
+    }
 
-    repl->verbose = verbose;
-    galera->verbose = verbose;
+    repl = new Mariadb_nodes("node", test_dir, verbose);
+    galera = new Mariadb_nodes("galera", test_dir, verbose);
 
     bool snapshot_reverted = false;
     if (use_snapshots)
@@ -149,18 +141,6 @@ copy_logs(true), use_snapshots(false), verbose(false)
     }
     else
     {
-        // Truncate log files
-        repl->truncate_mariadb_logs();
-        galera->truncate_mariadb_logs();
-
-        // Flush hosts
-        repl->flush_hosts();
-        galera->flush_hosts();
-
-        // Close any open connections
-        repl->close_active_connections();
-        galera->close_active_connections();
-
         if (!no_nodes_check)
         {
             if (repl->check_replication(0) || galera->check_galera())
@@ -177,8 +157,7 @@ copy_logs(true), use_snapshots(false), verbose(false)
                     exit(200);
                 }
 
-                //  checking all nodes and restart if needed
-                tprintf("Checking Master/Slave\n");
+                // Check all nodes and restart if needed
                 int attempts = 2;
 
                 while (attempts > 0)
@@ -275,29 +254,6 @@ TestConnections::~TestConnections()
     delete galera;
 }
 
-TestConnections::TestConnections()
-{
-    galera = new Mariadb_nodes((char *)"galera");
-    repl   = new Mariadb_nodes((char *)"repl");
-
-    global_result = 0;
-
-    rwsplit_port = 4006;
-    readconn_master_port = 4008;
-    readconn_slave_port = 4009;
-    ports[0] = rwsplit_port;
-    ports[1] = readconn_master_port;
-    ports[2] = readconn_slave_port;
-
-    read_env();
-
-    timeout = 999999999;
-    set_log_copy_interval(999999999);
-    pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
-    pthread_create( &log_copy_thread_p, NULL, log_copy_thread, this);
-    gettimeofday(&start_time, NULL);
-}
-
 void TestConnections::add_result(int result, const char *format, ...)
 {
     timeval t2;
@@ -325,11 +281,12 @@ void TestConnections::add_result(int result, const char *format, ...)
 int TestConnections::read_env()
 {
 
-    char * env;
-    int i;
-    printf("Reading test setup configuration from environmental variables\n");
-    galera->read_env();
-    repl->read_env();
+    char *env;
+
+    if (verbose)
+    {
+        printf("Reading test setup configuration from environmental variables\n");
+    }
 
     env = getenv("maxscale_IP"); if (env != NULL) {sprintf(maxscale_IP, "%s", env);}
     env = getenv("maxscale_user"); if (env != NULL) {sprintf(maxscale_user, "%s", env); } else {sprintf(maxscale_user, "skysql");}

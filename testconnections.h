@@ -45,11 +45,6 @@ public:
      */
     TestConnections(int argc, char *argv[]);
 
-    /**
-     * @brief TestConnections constructor: only reads environmental variables
-     */
-    TestConnections();
-
     ~TestConnections();
 
     /**
@@ -219,16 +214,6 @@ public:
      * @return 0 if success
      */
     int copy_mariadb_logs(Mariadb_nodes *repl, char * prefix);
-
-    /**
-     * @brief no_maxscale_stop if true copy_all_logs() does not stop Maxscale
-     */
-    bool no_maxscale_stop;
-
-    /**
-     * @brief no_maxscale_start if true Maxscale won't be started and Maxscale.cnf won't be uploaded
-     */
-    bool no_maxscale_start;
 
     /**
      * @brief no_nodes_check if true nodes are not checked before test and are not restarted

@@ -34,7 +34,7 @@ public:
      * @brief Constructor
      * @param pref  name of backend setup (like 'repl' or 'galera')
      */
-    Mariadb_nodes(char * pref);
+    Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose);
 
     ~Mariadb_nodes();
 
