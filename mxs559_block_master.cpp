@@ -113,10 +113,7 @@ int main(int argc, char *argv[])
     Test->tprintf("flush hosts\n");
     Test->repl->flush_hosts();
     Test->repl->check_and_restart_nodes_vm();
-    if (Test->repl->check_replication(0))
-    {
-        Test->repl->start_replication();
-    }
+    Test->repl->fix_replication();
     sleep(5);
     Test->tprintf("Drop t1\n");
     Test->connect_maxscale();

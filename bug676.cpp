@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 
     Test->stop_timeout();
     Test->tprintf("Restarting Galera cluster\n");
-    Test->galera->start_galera();
+    Test->galera->start_replication();
 
     Test->copy_all_logs(); return(Test->global_result);
 }
