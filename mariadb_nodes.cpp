@@ -544,6 +544,7 @@ bool Mariadb_nodes::fix_replication()
             }
 
             start_replication();
+            close_connections();
 
             attempts--;
         }
